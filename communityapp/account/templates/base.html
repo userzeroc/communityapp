@@ -1,0 +1,78 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+</head>
+<body>
+<div id="header">
+    <span class="logo">Bookmarks</span>
+    {% if request.user.is_authenticated %}
+     <ul class="menu">
+        <li {% if section == "dashboard" %}class="selected"{% endif %}>
+          <a href="{% url "dashboard" %}">My dashboard</a>
+        </li>
+        <li {% if section == "images" %}class="selected"{% endif %}>
+          <a href="{% url "images:list" %}">Images</a>
+        </li>
+        <li {% if section == "people" %}class="selected"{% endif %}>
+          <a href="">People</a>
+        </li>
+      </ul>
+    {% endif %}
+    <span class="user">
+        {% if request.user.is_authenticated %}
+            欢迎{{ request.user.first_name }}
+            <a href="{% url "logout" %}">登出</a>
+        {% else %}
+            <a href="{% url "login" %}">登录</a>
+        {% endif %}
+    </span>
+</div>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li class="{{ message.tags }}">
+                {{ message|safe }}
+                <a href="#" class="close"></a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<div id="content">
+    {% block content %}{% endblock %}
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+{#从CDN中加载JS Cookie，从而方便的与Cookie进行交互#}
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script>
+    {#利用Cookie.get() scrftoken 的cookie 值#}
+    var csrftoken = Cookies.get('csrftoken');
+    {#define function use to detection is the http method safe, safe megtod don't need protectioned by CSRF#}
+
+    function csrfSafeMethod(method) {
+        {#    不需要验证的请求#}
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method))
+    }
+
+    {# usering $ajaxSteup() method setting Jquery request. check is the ajax request safe before every ajax method #}
+    {#且当前请求不可跨域，若不安全则利用cookie设置csrf头#}
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+            }
+
+        }
+    });
+
+    $(document).ready(function () {
+        {% block domready %}]
+
+        {% endblock %}
+    });
+</script>
+</body>
+</html>

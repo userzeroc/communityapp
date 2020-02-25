@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block title %}人员{% endblock %}
+
+{% block content %}
+    <h1>人数</h1>
+    <div id="people-list">
+        {% for user in users %}
+            <div class="user">
+                <a href="{{ user.get_absolute_url }}">
+                    {% thumbnail user.profile.photo "180x180" crop="100%" as im %}
+                        <img src="{{ im.url }}">
+                    {% endthumbnail %}
+                </a>
+                <div class="info">
+                    <a href="{{ user.get_absolute_url }}">{{ user.get_username }}</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+<li {% if section == "people" %} class="selected" {% endif %}>
+<a href="{% url "user_list" %}">人数</a>
+</li>

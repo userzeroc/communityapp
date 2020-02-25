@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}仪表盘{% endblock %}
+{% block content %}
+    <h1>仪表盘</h1>
+    {% with total_images_created=request.user.images_created.count %}
+        <p>欢迎来到您的仪表盘，您已经收藏{{ total_images_created }}张图片{{ total_images_created|pluralize }}</p>
+    {% endwith %}
+
+    <p>Drag the following button to your bookmarks toolbar to bookmark images from other websites --> <a href="javascript:{% include "bookmarklet_launcher.js" %}" class="button">标记</a></p>
+    <p>您也可以<a href="{% url "edit" %}">编辑您的文件</a>或者<a href="{% url "password_change" %}">修改密码</a></p>
+{% endblock %}
